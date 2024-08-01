@@ -1,0 +1,26 @@
+{
+  "name": "e-dashboard",
+  "version": "1.0.0",
+  "main": "index.js",
+  "scripts": {
+    "start": "nodemon",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/hrushigawade4/e-commerce-dashbord.git"
+  },
+  "author": "Hrushikesh G",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/hrushigawade4/e-commerce-dashbord/issues"
+  },
+  "homepage": "https://github.com/hrushigawade4/e-commerce-dashbord#readme",
+  "description": "",
+  "dependencies": {
+    "cors": "^2.8.5",
+    "express": "^4.19.2",
+    "mongoose": "^8.5.2",
+    "nodemon": "^3.1.4"
+  }
+}
