@@ -3,6 +3,9 @@ require("./db/config");
 const User = require("./db/User");
 const Product = require("./db/Product")
 const cors = require("cors");
+const Jwt = require('jsonwebtoken')
+
+const jwtKey = 'e-comm'
 
 
 const app = express();
@@ -16,14 +19,25 @@ app.post("/register", async (req, res) => {
   console.log(result);
   result=result.toObject();
   delete result.password
-  res.send(result);
+  Jwt.sign({result},jwtKey,{expiresIn:"2h"},(err,token)=>{
+    if(err){
+      res.send({ result: "Something went wrong, Please try after some time!!!" });
+    }
+    res.send({result,auth:token});
+  })
 });
 
 app.post("/login", async (req, res) => {
   if (req.body.password && req.body.email) {
     let user = await User.findOne(req.body).select("-password");
     if (user) {
-      res.send(user);
+      Jwt.sign({user},jwtKey,{expiresIn:"2h"},(err,token)=>{
+        if(err){
+          res.send({ result: "Something went wrong, Please try after some time!!!" });
+        }
+        res.send({user,auth:token});
+      })
+      
     } else {
       res.send({ result: "No user found!!!" });
     }
@@ -75,7 +89,7 @@ app.put('/product/:id',async(req,res)=>{
 })
 
 
-app.get('/search/:key',async(req,res)=>{
+app.get('/search/:key',verifyToken, async(req,res)=>{
   let result = await Product.find({
     "$or":[
     {
@@ -93,5 +107,26 @@ app.get('/search/:key',async(req,res)=>{
   })
   res.send(result)
 })
+
+
+function verifyToken(req,res, next){
+  console.warn(req.headers['authorization']);
+  let token = req.headers['authorization'];
+  if(token){
+    token = token.split(' ')[1]
+    Jwt.verify(token,jwtKey,(err,valid)=>{
+      if(err){
+        res.status(401).send({result:"Please provide a valid token"})
+      }else{
+        next()
+      }
+    })
+    
+  }else{
+    res.status(403).send({result:"Please provide a token"})
+  }
+ 
+  
+}
 
 app.listen(5000);
